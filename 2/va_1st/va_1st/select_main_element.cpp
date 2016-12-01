@@ -1,9 +1,10 @@
 #include<iostream>
+#include<math.h>
 
 using namespace std;
 /**********************
 完成了矩阵的相关操作，初始化、显示、行/列交换，查找行/列最大值
-2016.11.29 20:03
+2016.11.30 20:03
 ippfcox
 ***********************/
 
@@ -13,9 +14,10 @@ bool log_flag = true;
 double A[HeightMatrix][WidthMatrix] = {0};
 
 void PrintMatrix(double matrix[HeightMatrix][WidthMatrix]);
-void InitializeMatrix();
+void InitializeMatrix(double initMatrix[HeightMatrix][WidthMatrix]);
 void PrintLog(char log[]);
 void SwapMatrix(int a, int b, char direction);
+int ColumnPrimaryElement(int j);
 int MaxArray(int a, char direction);
 void Test();
 
@@ -23,7 +25,7 @@ void Test();
 void PrintLog(char log[]){
 	if(log_flag){
 		cout<<log;
-		PrintMatrix(A);
+		//PrintMatrix(A);
 	}
 }
 //显示当前矩阵,进行简化修改
@@ -36,19 +38,14 @@ void PrintMatrix(double matrix[HeightMatrix][WidthMatrix]){
 	}
 }
 //用很笨的方法初始化矩阵
-void InitializeMatrix(){
-	double tmp[HeightMatrix][WidthMatrix] = {
-		{0, 1, 2, 3},
-		{1, 2, 5, 3},
-		{6, 4, 3, 4},
-		{2, 5, 3, 2}
-	};
+void InitializeMatrix(double initMatrix[HeightMatrix][WidthMatrix]){
 	for(int i = 0; i < HeightMatrix; i++){
 		for(int j = 0; j < WidthMatrix; j++){
-			A[i][j] = tmp[i][j];
+			A[i][j] = initMatrix[i][j];
 		}
 	}
 	PrintLog("矩阵被初始化为\n");
+	PrintMatrix(A);
 }
 //交换矩阵的行或者列，开头为0！！！
 void SwapMatrix(int a, int b, char direction){
@@ -83,7 +80,17 @@ void SwapMatrix(int a, int b, char direction){
 		break;
 	}
 }
-//查找某行/列的最大值，返回索引
+//没有必要查找行最大值，列主元素也不是在整列中查找[j, MaxHeight]
+int ColumnPrimaryElement(int j){
+	int max_index = j;
+	for(int i = j + 1; i < HeightMatrix; i++){
+		if(abs(A[i][j]) > abs(A[max_index][j])){
+			max_index = i;
+		}
+	}
+	return max_index;
+}
+//查找某行/列的绝对值最大值，返回索引
 int MaxArray(int a, char direction){
 	int max_index = 0;
 	switch(direction){
@@ -93,7 +100,7 @@ int MaxArray(int a, char direction){
 			return -1;
 		}
 		for(int i = 1; i < HeightMatrix; i++){
-			if(A[i][a] > A[max_index][a]){
+			if(abs(A[i][a]) > abs(A[max_index][a])){
 				max_index= i;
 			}
 		}
@@ -105,7 +112,7 @@ int MaxArray(int a, char direction){
 			return -1;
 		}
 		for(int j = 0; j < WidthMatrix; j++){
-			if(A[a][j] > A[a][max_index]){
+			if(abs(A[a][j]) > abs(A[a][max_index])){
 				max_index= j;
 			}
 		}
@@ -118,8 +125,15 @@ int MaxArray(int a, char direction){
 	}
 	return max_index;
 }
+
 void Test(){
-	InitializeMatrix();
+	double initMatrix[HeightMatrix][WidthMatrix] = {
+		{0, 1, 2, 3},
+		{1, 2, 5, 3},
+		{6, 4, 3, 4},
+		{2, 5, 3, 2}
+	};
+	InitializeMatrix(initMatrix);
 	///////////////////////行/列交换测试
 	//SwapMatrix(0, 4, 'c');
 	//SwapMatrix(1, 4, 'r');
@@ -131,7 +145,34 @@ void Test(){
 	//PrintMatrix(A);
 }
 void main(){
-	
-	Test();
+	double initMatrix[HeightMatrix][WidthMatrix] = {
+		{5.2, -9.5, 1.4, -24.5, 2.8},
+		{2.4, 1.7, 16.1, 5.1, -7.3},
+		{5.3, 21.3, -4.8, 4.2, -3.1},
+		{14.7, 5.7, -1.4, 3.5, 1.5}
+	};
+	InitializeMatrix(initMatrix);
+	for(int j = 0; j < WidthMatrix - 1; j++){
+		//列选主元素
+		int a = ColumnPrimaryElement(j);
+		cout<<"主元素|A["<<a<<"]["<<j<<"]| = "<<abs(A[a][j])<<endl;
+		//交换主元素行和对应行
+		SwapMatrix(a, j, 'r');
+		cout<<"交换主元素行"<<a<<"和"<<j<<endl;
+		
+		//消元
+		for(int i = 0; i < HeightMatrix; i++){
+			if(i == j){//同一行没得消
+				continue;
+			}
+			double coffient = -A[i][j] / A[j][j];
+			cout<<A[i][j]<<"/"<<A[j][j]<<"="<<coffient<<endl;
+			for(int k = 0; k < WidthMatrix; k++){
+				A[i][k] = A[i][k] + coffient * A[i][j];
+				//issues
+			}PrintMatrix(A);
+		}break;
+	}
+	//Test();
 	getchar();
 }
