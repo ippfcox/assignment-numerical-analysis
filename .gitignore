@@ -1,0 +1,5 @@
+*.db
+*.pdb
+*.idb
+*.ilk
+*.tlog
