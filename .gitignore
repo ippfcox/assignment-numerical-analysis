@@ -3,3 +3,4 @@
 *.idb
 *.ilk
 *.tlog
+*.ipch
