@@ -11,7 +11,7 @@ double f(double x) {
 void main() {
 	double a = 3.0;
 	double b = 5.0;
-	int iter_count = 10000;
+	int iter_count = 50;
 	for (int m = 1; m < iter_count; m++) {
 		double h = (b - a) / m;
 		double sum1 = 0;
@@ -19,11 +19,11 @@ void main() {
 		for (int k = 0; k < m; k++) {
 			double xk = a + k*h;
 			double xk_ = xk + h / 2;
-			sum1 += f(xk);
+			if(k!=0) sum1 += f(xk);
 			sum2 += f(xk_);
 		}
 		double Sm = h / 6 * (f(a) + 2 * sum1 + f(b) + 4 * sum2);
-		cout << setprecision(16) << "m = " << m << ", Sm = " << Sm << endl;
+		cout << setprecision(8) << "m = " << m << ", Sm = " << Sm << endl;
 	}
 	getchar();
 }
